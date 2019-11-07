@@ -8,6 +8,9 @@ module.exports ={
     updateRecipe,
     removeRecipe,
     findIngrdients,
+    getShoppingList,
+    getInstructions,
+    getIngredientWithRecipes
 }
 
 function findRecipes(){
@@ -50,4 +53,24 @@ function removeRecipe(id) {
     return db('recipes')
         .where('id', id)
         .del();
+}
+
+function getShoppingList (id) {
+    return db("recipes_ingredients")
+        .join("ingredients", "ingredients.id", "recipes_ingredients.ingredient_id")
+        .where({recipe_id: id})
+        .select("ingredients.ingredient", "recipes_ingredients.quantity")
+}
+
+function getInstructions (id) {
+    return db("instructions").where({recipe_id: id})
+        .orderBy("instructions.step_number")
+}
+
+function getIngredientWithRecipes (id) {
+    return db("recipes_ingredients")
+        .join("ingredients", "ingredients.id", "recipes_ingredients.ingredient_id")
+        .join("recipes", "recipes.id", "recipes_ingredients.recipe_id")
+        .where({ingredient_id: id})
+        .select("ingredients.ingredient", "recipes.recipe_name")
 }
